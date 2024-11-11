@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -30,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rachyharkov.lemonade.ui.theme.LemonadeTheme
 
 class MainActivity : ComponentActivity() {
@@ -61,6 +66,7 @@ fun LemonadeImage(image: Int, cd: Int) {
 fun LemonadeApp() {
 
     var tapping = remember { mutableIntStateOf(0) }
+    var maxTapping = remember { mutableIntStateOf(0) }
     var step = remember { mutableIntStateOf(0) }
     var image = R.drawable.lemon_tree
     var imageCd = R.string.image_cd_1
@@ -100,21 +106,37 @@ fun LemonadeApp() {
         ) {
             Button(
                 onClick = {
+                    if(step.intValue == 1 && (tapping.intValue < maxTapping.intValue)) {
+                        tapping.intValue++
+                        return@Button
+                    }
+
                     if(step.intValue == 3) {
                         step.intValue = 0
+                        tapping.intValue = 0
+                        maxTapping.intValue = (3..8).random()
                         return@Button
                     }
                     step.intValue++
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF5AF3AE),
-                )
+                    containerColor = Color(0xFF80FFD1),
+                ),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier
+                    .wrapContentSize()
             ) {
                 LemonadeImage(image, imageCd)
             }
             Spacer(modifier = Modifier.height(16.dp))
+            if(step.intValue == 1) {
+                Text(
+                    text = "Squeezed ${tapping.intValue}/${maxTapping.intValue}",
+                )
+            }
             Text(
-                text = stringResource(message)
+                text = stringResource(message),
+                fontSize = 18.sp
             )
         }
     }
